@@ -5,16 +5,11 @@ from typing import List
 import re
 
 
-def filter_datum(
-        fields:List[str],
-        redaction: str,
-        message: str,
-        separator: str
-):
+def filter_datum(fields, redaction, message, separator) -> str:
     """
     A function that filter input data based and
     obfuscates sensitive information
     """
-    for field in fields:
-        message = re.sub(f'{field}=([^;\s]+)', f'{field}={redaction}', message)
+    for key in fields:
+        message = re.sub(f'{key}=([^;\\s]+)', f'{key}={redaction}', message)
     return message
