@@ -6,10 +6,7 @@ import re
 
 
 def filter_datum(fields, redaction, message, separator) -> str:
-    """
-    A function that filter input data based and
-    obfuscates sensitive information
-    """
+    """A function that filter input data"""
     for key in fields:
         message = re.sub(f'{key}=([^;\\s]+)', f'{key}={redaction}', message)
     return message
