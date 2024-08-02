@@ -5,6 +5,7 @@ import logging
 from mysql.connector import connect, MySQLConnection, Error
 import os
 import re
+from typing import List
 
 
 PII_FIELDS = ('email', 'phone', 'ssn', 'password', 'ip')
@@ -27,10 +28,13 @@ def get_db() -> MySQLConnection:
         print(error)
         return None
 
-def filter_datum(fields, redaction, message, separator) -> str:
+def filter_datum(fields: List[str],
+                 redaction: str,
+                 message: str,
+                 separator: str) -> str:
     """A function that filter input data"""
     for key in fields:
-        message: str = re.sub(f'{key}=([^;\\s]+)', f'{key}={redaction}', message)
+        message = re.sub(f'{key}=([^;\\s]+)', f'{key}={redaction}', message)
     return message
 
 
