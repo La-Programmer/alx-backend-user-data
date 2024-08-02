@@ -29,10 +29,12 @@ def get_db() -> MySQLConnection:
         print(error)
         return None
 
-def filter_datum(fields: List[str],
-                 redaction: str,
-                 message: str,
-                 separator: str) -> str:
+
+def filter_datum(
+        fields: List[str],
+        redaction: str,
+        message: str,
+        separator: str) -> str:
     """A function that filter input data"""
     for key in fields:
         message = re.sub(f'{key}=([^;\\s]+)', f'{key}={redaction}', message)
@@ -64,5 +66,8 @@ class RedactingFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """Remove sensitive information"""
-        filtered = filter_datum(self.fields, self.REDACTION, super().format(record), self.SEPARATOR)
+        filtered = filter_datum(self.fields,
+                                self.REDACTION,
+                                super().format(record),
+                                self.SEPARATOR)
         return filtered
