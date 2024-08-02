@@ -1,23 +1,42 @@
 #!/usr/bin/env python3
 """Function to filter data"""
 
-import re
 import logging
+from mysql.connector import connect, MySQLConnection, Error
+import os
+import re
 
 
 PII_FIELDS = ('email', 'phone', 'ssn', 'password', 'ip')
+username = os.environ.get('PERSONAL_DATA_DB_USERNAME') or 'root'
+password = os.environ.get('PERSONAL_DATA_DB_PASSWORD') or ''
+host = os.environ.get('PERSONAL_DATA_DB_HOST') or 'localhost'
+db = os.environ.get('PERSONAL_DATA_DB_NAME')
 
+
+def get_db() -> MySQLConnection:
+    try:
+        connection: MySQLConnection = connect(
+            host=host,
+            user=username,
+            password=password,
+            database=db
+        )
+        return connection
+    except Error as error:
+        print(error)
+        return None
 
 def filter_datum(fields, redaction, message, separator) -> str:
     """A function that filter input data"""
     for key in fields:
-        message = re.sub(f'{key}=([^;\\s]+)', f'{key}={redaction}', message)
+        message: str = re.sub(f'{key}=([^;\\s]+)', f'{key}={redaction}', message)
     return message
 
 
 def get_logger() -> logging.Logger:
     """Get logger function"""
-    my_logger = logging.Logger('user_data', logging.INFO)
+    my_logger: logging.Logger = logging.Logger('user_data', logging.INFO)
     handler = logging.StreamHandler()
     formatter = RedactingFormatter(PII_FIELDS)
     handler.setFormatter = formatter
