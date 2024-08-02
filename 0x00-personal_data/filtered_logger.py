@@ -66,8 +66,7 @@ class RedactingFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """Remove sensitive information"""
-        filtered: str = filter_datum(self.fields,
-                                self.REDACTION,
-                                super().format(record),
-                                self.SEPARATOR)
+        filtered: str = filter_datum(self.fields, self.REDACTION,
+                                     super().format(record),
+                                     self.SEPARATOR)
         return filtered
