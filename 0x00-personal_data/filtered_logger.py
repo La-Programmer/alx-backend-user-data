@@ -59,14 +59,14 @@ class RedactingFormatter(logging.Formatter):
     FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
     SEPARATOR = ";"
 
-    def __init__(self, fields):
+    def __init__(self, fields: List[str]):
         """Initialization function"""
         self.fields = fields
         super(RedactingFormatter, self).__init__(self.FORMAT)
 
     def format(self, record: logging.LogRecord) -> str:
         """Remove sensitive information"""
-        filtered = filter_datum(self.fields,
+        filtered: str = filter_datum(self.fields,
                                 self.REDACTION,
                                 super().format(record),
                                 self.SEPARATOR)
