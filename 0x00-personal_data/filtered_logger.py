@@ -16,6 +16,7 @@ db = os.environ.get('PERSONAL_DATA_DB_NAME')
 
 
 def get_db() -> MySQLConnection:
+    """DB initialization"""
     try:
         connection: MySQLConnection = connect(
             host=host,
@@ -57,6 +58,7 @@ class RedactingFormatter(logging.Formatter):
     SEPARATOR = ";"
 
     def __init__(self, fields):
+        """Initialization function"""
         self.fields = fields
         super(RedactingFormatter, self).__init__(self.FORMAT)
 
