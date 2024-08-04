@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """Function to filter data"""
 
+import bcrypt
 import logging
 from mysql.connector import connect, MySQLConnection, Error
 import os
 import re
 import sys
-from typing import List
+from typing import List, ByteString
 
 
-PII_FIELDS = ('email', 'phone', 'ssn', 'password', 'ip')
+PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
 username = os.environ.get('PERSONAL_DATA_DB_USERNAME') or 'root'
 password = os.environ.get('PERSONAL_DATA_DB_PASSWORD') or ''
 host = os.environ.get('PERSONAL_DATA_DB_HOST') or 'localhost'
