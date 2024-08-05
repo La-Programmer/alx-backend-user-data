@@ -38,11 +38,17 @@ class BasicAuth(Auth):
             return None
         elif not isinstance(base64_authorization_header, str):
             return None
-        elif not self.validate_base64(base64_authorization_header):
+        elif self.validate_base64(base64_authorization_header) is False:
             return None
         else:
             decoded_str: bytes = base64.b64decode(base64_authorization_header)
-            return decoded_str.decode('utf-8')
+            try:
+                result: str = decoded_str.decode('utf-8')
+            except Exception as e:
+                print(str(e))
+                result: str = None
+            finally:
+                return result
 
     def validate_base64(self, base64_string: str) -> bool:
         """
@@ -96,3 +102,16 @@ class BasicAuth(Auth):
         if user_instance.password != password:
             return None
         return(user_instance)
+
+    def current_user(self, request=None) -> TypeVar('User'):
+        """
+        Engine method
+        """
+        auth_header: str = self.authorization_header(request)
+        b64_header: str = self.extract_base64_authorization_header(auth_header)
+        credentials: str = self.decode_base64_authorization_header(b64_header)
+        decoded_cred: (str, str) = self.extract_user_credentials(credentials)
+        user_object: User = self.user_object_from_credentials(
+            decoded_cred[0],
+            decoded_cred[1])
+        return user_object
