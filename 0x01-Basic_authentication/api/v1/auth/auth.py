@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Auth Module holding base class for auth handling"""
 
 from flask import request
 from typing import List, TypeVar
