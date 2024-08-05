@@ -2,8 +2,10 @@
 
 import base64
 from api.v1.auth.auth import Auth
+import hashlib
+from models.user import User
 import re
-from typing import List
+from typing import List, TypeVar
 
 
 class BasicAuth(Auth):
@@ -71,3 +73,26 @@ class BasicAuth(Auth):
             info: List[str] = decoded_base64_authorization_header.split(':')
             result: (str, str) = tuple(info)
             return result
+
+    def user_object_from_credentials(
+            self,
+            user_email: str,
+            user_pwd: str) -> TypeVar('User'):
+        """
+        Get the stored user objec from the given credentials
+        """
+        if user_email is None or not isinstance(user_email, str):
+            return None
+        elif user_pwd is None or not isinstance(user_pwd, str):
+            return None
+        try:
+            user_from_db = User.search({'email': user_email})
+        except Exception as e:
+            print(str(e))
+        if user_from_db is None or user_from_db == []:
+            return None
+        user_instance: User = user_from_db[0]
+        password = hashlib.sha256(user_pwd.encode()).hexdigest().lower()
+        if user_instance.password != password:
+            return None
+        return(user_instance)
