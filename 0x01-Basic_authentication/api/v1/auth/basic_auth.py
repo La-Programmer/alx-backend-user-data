@@ -77,7 +77,9 @@ class BasicAuth(Auth):
         elif ':' not in decoded_base64_authorization_header:
             return (None, None)
         else:
-            info: List[str] = decoded_base64_authorization_header.split(':')
+            info: List[str] = decoded_base64_authorization_header.split(
+                ':',
+                maxsplit=1)
             result: (str, str) = tuple(info)
             return result
 
