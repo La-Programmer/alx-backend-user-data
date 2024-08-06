@@ -17,8 +17,11 @@ class Auth():
             return True
         if path in excluded_paths or path+'/' in excluded_paths:
             return False
-        else:
-            return True
+        for excluded_path in excluded_paths:
+            excluded_path = excluded_path[0: len(excluded_path) - 1]
+            if excluded_path in path:
+                return False
+        return True
 
     def authorization_header(self, request=None) -> str:
         """Valid headers of incoming requests
