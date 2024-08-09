@@ -3,7 +3,7 @@
 
 from api.v1.views import app_views
 from flask import abort, jsonify, request
-from flask import session, Response
+from flask import Response
 from models.user import User
 from typing import List
 import os
@@ -16,7 +16,7 @@ session_name = os.environ.get('SESSION_NAME')
     '/auth_session/login',
     methods=['POST'],
     strict_slashes=False)
-def handle_login():
+def handle_login() -> Response:
     """POST /api/v1/auth_session/login
     Handles the login functionality for users
     Return:
@@ -47,7 +47,7 @@ def handle_login():
     '/auth_session/logout',
     methods=['DELETE'],
     strict_slashes=False)
-def handle_logout():
+def handle_logout() -> str:
     """DELETE /api/v1/auth_session/logout
     Handles the logut functionality for users
     Return:
