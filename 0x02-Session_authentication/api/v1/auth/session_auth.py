@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Module Session Auth"""
 
+from typing import TypeVar
 from api.v1.auth.auth import Auth
+from api.v1.views.users import User
 import uuid
 
 
@@ -35,5 +37,28 @@ class SessionAuth(Auth):
         elif not isinstance(session_id, str):
             return None
         else:
-            user_id = self.user_id_by_session_id.get(session_id)
-            return user_id
+            try:
+                user_id = self.user_id_by_session_id.get(session_id)
+            except Exception as e:
+                user_id = None
+                print(e)
+            finally:
+                return user_id
+
+    def current_user(self, request=None) -> TypeVar('User'):
+        """
+        Get a user based on the cookie gotten from the request
+        Returns:
+            - User instance or None
+        """
+        if request is None:
+            return None
+        cookie: str = self.session_cookie(request)
+        if cookie is None:
+            return None
+        user: str = self.user_id_for_session_id(cookie)
+        if user is None:
+            return None
+        print("User", user)
+        user_object = User.get(user)
+        return user_object
