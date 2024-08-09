@@ -10,9 +10,6 @@ from typing import List
 import os
 
 
-session_name = os.environ.get('SESSION_NAME')
-
-
 @app_views.route('/auth_session/login', methods=['POST'],
     strict_slashes=False)
 def handle_login() -> Response:
@@ -35,6 +32,7 @@ def handle_login() -> Response:
     if not user.is_valid_password(password):
         return jsonify({"error": "wrong password"}), 401
     from api.v1.app import auth
+    session_name = os.environ.get('SESSION_NAME')
     session_id = auth.create_session(user.id)
     user_object = user.to_json()
     response: Response = jsonify(user_object)
