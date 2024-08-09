@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""View to handle session authentication"""
+""" View to handle session authentication
+"""
 
 from api.v1.views import app_views
 from flask import abort, jsonify, request
@@ -12,12 +13,10 @@ import os
 session_name = os.environ.get('SESSION_NAME')
 
 
-@app_views.route(
-    '/auth_session/login',
-    methods=['POST'],
+@app_views.route('/auth_session/login', methods=['POST'],
     strict_slashes=False)
 def handle_login() -> Response:
-    """POST /api/v1/auth_session/login
+    """ POST /api/v1/auth_session/login
     Handles the login functionality for users
     Return:
         - User Object
@@ -48,7 +47,7 @@ def handle_login() -> Response:
     methods=['DELETE'],
     strict_slashes=False)
 def handle_logout() -> str:
-    """DELETE /api/v1/auth_session/logout
+    """ DELETE /api/v1/auth_session/logout
     Handles the logut functionality for users
     Return:
         - {} 200
