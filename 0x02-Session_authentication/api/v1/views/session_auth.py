@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""View to handle session authentication"""
 
 from api.v1.views import app_views
 from flask import abort, jsonify, request
@@ -35,8 +36,24 @@ def handle_login():
     if not user.is_valid_password(password):
         return jsonify({"error": "wrong password"}), 401
     from api.v1.app import auth
-    auth.create_session(user.id)
+    session_id = auth.create_session(user.id)
     user_object = user.to_json()
     response: Response = jsonify(user_object)
-    response.set_cookie(session_name, user_object['id'])
+    response.set_cookie(session_name, session_id)
     return response
+
+
+@app_views.route(
+    '/auth_session/logout',
+    methods=['DELETE'],
+    strict_slashes=False)
+def handle_logout():
+    """DELETE /api/v1/auth_session/logout
+    Handles the logut functionality for users
+    Return:
+        - {} 200
+    """
+    from api.v1.app import auth
+    if not auth.destroy_session(request):
+        abort(404)
+    return jsonify({}), 200

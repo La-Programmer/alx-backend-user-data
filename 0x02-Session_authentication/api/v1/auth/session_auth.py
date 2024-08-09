@@ -41,7 +41,6 @@ class SessionAuth(Auth):
                 user_id = self.user_id_by_session_id.get(session_id)
             except Exception as e:
                 user_id = None
-                print(e)
             finally:
                 return user_id
 
@@ -59,6 +58,21 @@ class SessionAuth(Auth):
         user: str = self.user_id_for_session_id(cookie)
         if user is None:
             return None
-        print("User", user)
         user_object = User.get(user)
         return user_object
+
+    def destroy_session(self, request=None):
+        """
+        Handles logout by deleting session
+        Returns:
+            -
+        """
+        if request is None:
+            return False
+        if self.session_cookie(request) is None:
+            return False
+        session = self.session_cookie(request)
+        if self.user_id_for_session_id(session) is None:
+            return False
+        del self.user_id_by_session_id[session]
+        return True
