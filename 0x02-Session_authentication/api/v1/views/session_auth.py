@@ -8,8 +8,10 @@ from typing import List
 import os
 
 
-@app_views.route('/auth_session/login', methods=['POST'],
-    strict_slashes=False)
+@app_views.route(
+        '/auth_session/login',
+        methods=['POST'],
+        strict_slashes=False)
 def handle_login() -> str:
     """ POST /api/v1/auth_session/login
     Handles the login functionality for users
