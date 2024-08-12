@@ -35,7 +35,24 @@ class Auth:
         try:
             user: User = db.find_user_by(email=email)
             raise ValueError(f'User {email} already exists')
-        except NoResultFound as e:
+        except NoResultFound:
             hashed_password: bytes = _hash_password(password)
             new_user: User = db.add_user(email, hashed_password)
             return new_user
+        except Exception as e:
+            print("User registration failed due to: ", str(e))
+            return None
+
+    def valid_login(self, email: str, password: str) -> bool:
+        """Validate a user's login credentials
+        """
+        db = self._db
+        try:
+            user: User = db.find_user_by(email=email)
+            user_password = user.hashed_password
+            if bcrypt.checkpw(bytes(password, 'utf-8'), user_password):
+                return True
+            else:
+                return False
+        except Exception:
+            return False
