@@ -44,7 +44,7 @@ class DB:
     # BEFORE COMMITTING GO BACK TO THE TOP AND CHANGE
     # sqlalchemy.exc to sqlalchemy.orm.exc
 
-    def find_user_by(self, **kwargs):
+    def find_user_by(self, **kwargs) -> User:
         """ Finds a user based on keyword arguments
         """
         db_session = self._session
@@ -53,7 +53,16 @@ class DB:
         for i in kwargs:
             if i not in columns:
                 raise InvalidRequestError
-        user = db_session.query(User).filter_by(**kwargs).first()
+        user: User = db_session.query(User).filter_by(**kwargs).first()
         if user is None:
             raise NoResultFound
         return user
+
+    def update_user(self, user_id: int, **kwargs) -> User:
+        """ Updates a user specified by user_id
+        """
+        db_session = self._session
+        user = db_session.query(User).filter_by(id=user_id).first()
+        for key, value in kwargs.items():
+            setattr(user, key, value)
+        db_session.commit()
