@@ -2,8 +2,9 @@
 """ Flask App
 """
 
-from flask import Flask, jsonify, request, abort
 from auth import Auth
+from flask import Flask, jsonify, request, abort, redirect
+from user import User
 
 
 app = Flask(__name__)
@@ -48,6 +49,29 @@ def login() -> str:
         return response
     else:
         abort(401)
+
+
+@app.route('/sessions', methods=['DELETE'], strict_slashes=False)
+def logout() -> str:
+    """Handle user logout"""
+    session_id: str = request.cookies.get('session_id')
+    user: User = AUTH.get_user_from_session_id(session_id)
+    if user is None:
+        abort(403)
+    else:
+        AUTH.destroy_session(user.id)
+        return redirect('/')
+
+
+@app.route('/profile', methods=['GET'], strict_slashes=False)
+def profile() -> str:
+    """Gets the user for the session"""
+    session_id: str = request.cookies.get('session_id')
+    user: User = AUTH.get_user_from_session_id(session_id)
+    if user is None:
+        abort(403)
+    else:
+        return jsonify({"email": user.email}), 200
 
 
 if __name__ == "__main__":
