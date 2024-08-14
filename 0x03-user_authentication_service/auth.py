@@ -115,7 +115,7 @@ class Auth:
             except NoResultFound:
                 raise ValueError
 
-    def reset_token(self, reset_token: str, password: str):
+    def update_password(self, reset_token: str, password: str):
         """Updates a user's password
         """
         db = self._db
