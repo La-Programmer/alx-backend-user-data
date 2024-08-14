@@ -71,7 +71,7 @@ class Auth:
             return None
         try:
             user: User = db.find_user_by(email=email)
-            if user is not None:
+            if user:
                 session_id: str = _generate_uuid()
                 db.update_user(user.id, session_id=session_id)
                 return session_id
@@ -86,7 +86,7 @@ class Auth:
             return None
         try:
             user: User = db.find_user_by(session_id=session_id)
-            if user is not None:
+            if user:
                 return user
             return None
         except NoResultFound:
@@ -96,21 +96,37 @@ class Auth:
         """Destroys a user's session
         """
         db = self._db
-        if user_id is not None:
+        if user_id:
             db.update_user(user_id, session_id=None)
 
     def get_reset_password_token(self, email: str) -> str:
         """Generates a password and assigns it to a user
         """
         db = self._db
-        if email is not None:
+        if email:
             try:
                 user: User = db.find_user_by(email=email)
-                if user is not None:
+                if user:
                     reset_token: str = _generate_uuid()
                     db.update_user(user.id, reset_token=reset_token)
                     return reset_token
                 else:
                     raise ValueError
+            except NoResultFound:
+                raise ValueError
+
+    def reset_token(self, reset_token: str, password: str):
+        """Updates a user's password
+        """
+        db = self._db
+        if reset_token and password:
+            try:
+                user = db.find_user_by(reset_token=reset_token)
+                if user:
+                    hashed_password: bytes = _hash_password(password)
+                    db.update_user(
+                        user.id,
+                        hashed_password=hashed_password,
+                        reset_token=None)
             except NoResultFound:
                 raise ValueError
