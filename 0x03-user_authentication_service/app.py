@@ -57,7 +57,7 @@ def logout():
     """Handle user logout
     """
     session_id: str = request.cookies.get('session_id')
-    if session_id is None:
+    if session_id is None or session_id.strip() is None:
         abort(403)
     try:
         user = AUTH.get_user_from_session_id(session_id)
@@ -75,7 +75,7 @@ def profile():
     """Get email of current logged in user
     """
     session_id: str = request.cookies.get('session_id')
-    if session_id is None:
+    if session_id is None or session_id.strip() is None:
         abort(403)
     try:
         user = AUTH.get_user_from_session_id(session_id)
@@ -92,7 +92,7 @@ def get_reset_password_token():
     """Get the token to reset password for a user
     """
     email: str = request.form.get('email')
-    if email:
+    if email.strip():
         try:
             token: str = AUTH.get_reset_password_token(email)
             if token is not None:
@@ -101,6 +101,22 @@ def get_reset_password_token():
             abort(403)
     else:
         abort(403)
+
+
+@app.route("/reset_password", methods=["PUT"], strict_slashes=False)
+def update_password():
+    """Reset the password of a user
+    """
+    email: str = request.form.get('email')
+    reset_token: str = request.form.get('reset_token')
+    new_password: str = request.form.get('new_password')
+    if email.strip() and reset_token.strip() and new_password.strip():
+        try:
+            AUTH.update_password(reset_token, new_password)
+            message: str = "Password updated"
+            return jsonify({"email": email, "message": message}), 200
+        except ValueError:
+            abort(403)
 
 
 if __name__ == "__main__":
